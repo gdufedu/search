@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" charset=utf-8>
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Document</title>
+    <style type="text/css" media="screen">
+        body{
+            background-color:#333;
+        }
+        .bg-div{
+            background-image: url(river.jpg);
+            width:1228px;
+            height:690px;
+        margin: 0 auto;
+        position:relative;
+        }
+        .logo{
+            background-image: url(logo.png);
+            width:107px;
+            height:53px;
+            float: left;
+            margin: -4px 18px 0 0;
+        }
+        form{
+            float: left;
+            background-color:#fff;
+            padding:5px;
+        }
+        .search-input-text{
+            border:0;
+            float: left;
+            height: 25px;
+            line-height: 25px;
+            outline:none;
+            width: 350px;
+
+        }
+        .search-input-button{
+            border:0;
+            background-image: url(search-button.png);
+            width:29px;
+            height: 29px;
+            float: left;
+        }
+        .search-box{
+            position:absolute;
+            top: 150px;
+            left:200px;
+        }
+        .suggest{
+            width: 388px;
+            background-color:#fff;
+            border:1px solid #999;
+        }
+        .suggest ul{
+            list-style:none;
+            margin:0;
+            padding: 0;
+        }
+        .suggest ul li{
+            padding: 3px;
+            font-size:14px;
+            line-height:25px;
+            cursor:pointer;
+        }
+        .suggest ul li:hover{
+            text-decoration:underline;
+            background-color:#e5e5e5;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-div">
+        <div class="search-box">
+            <div class="logo"></div>
+            <form id="search-form" action="https://cn.bing.com/search" target="_blank">
+               <input type="text" class="search-input-text" name="q" id="search_input" autocomplete="off">
+               <input type="submit" class="search-input-button" value="">
+            </form>
+        </div>
+    </div>
+    <div class="suggest" id="search-suggest" style="display: none;">
+        <ul id="search-result">
+            <li>搜索结果1</li>
+            <li>搜索结果2</li>
+        </ul>
+    </div>
+    <script>
+        $("#search_input").bind('keyup',function(){
+            var jqueryInput=$(this);
+            var searchText=jqueryInput.val();
+            $.ajax({
+                    url: 'http://api.bing.com/qsonhs.aspx?type=cb&q='+searchText,
+                    type: 'get',
+                    jsonp: "cb",
+                    dataType: 'jsonp',
+                    success:function(d){
+                        var d=d.AS.Results[0].Suggests;
+                        var html='';
+                        for(var i=0;i<d.length;i++){
+                            html+='<li>'+d[i].Txt+'</li>';
+                        }
+                        $("#search-result").html(html);
+                        $('#search-suggest').show().css({
+                        top:$('#search-form').offset().top+$('#search-form').height()+10,
+                        left:$('#search-form').offset().left,
+                        position:"absolute"
+                    });
+                    }
+                })
+});
+$(document).bind('click',function(){
+    $('#search-suggest').hide();
+});
+$(document).delegate('li','click',function(){
+    var keyword=$(this).text();
+    location.href='http://cn.bing.com/search?q='+keyword;
+});
+    </script>
+</body>
+</html>
